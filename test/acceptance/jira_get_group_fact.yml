@@ -1,0 +1,14 @@
+- name: test jira_get_group_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for jira-administrators group
+      jira_get_group_fact:
+        group_name: jira-administrators
+      register: admin_group_results
+
+    - name: Verify result
+      assert:
+        that:
+          - admin_group_results.ansible_facts.jira_group.name == 'jira-administrators'

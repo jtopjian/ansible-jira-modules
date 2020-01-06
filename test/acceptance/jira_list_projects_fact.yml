@@ -1,0 +1,14 @@
+- name: test jira_list_projects_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for projects named admin
+      jira_list_projects_fact:
+      register: projects_results
+
+    - name: Verify result
+      assert:
+        that:
+          - projects_results.ansible_facts.jira_projects.0.key == 'PROJ'
+          - projects_results.ansible_facts.jira_projects.0.lead.name == 'admin'

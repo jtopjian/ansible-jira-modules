@@ -1,0 +1,33 @@
+- name: test jira_list_groups_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for groups
+      jira_list_groups_fact:
+      register: group_results
+
+    - name: Verify result
+      assert:
+        that:
+          - group_results.ansible_facts.jira_groups.0.name == 'jira-administrators'
+
+    - name: Query for jira-core-users group
+      jira_list_groups_fact:
+        query: "core"
+      register: group_results
+
+    - name: Verify result
+      assert:
+        that:
+          - group_results.ansible_facts.jira_groups.0.name == 'jira-core-users'
+
+    - name: Exclude the jira-administrators group
+      jira_list_groups_fact:
+        exclude: "jira-administrators"
+      register: group_results
+
+    - name: Verify result
+      assert:
+        that:
+          - group_results.ansible_facts.jira_groups.0.name == 'jira-core-users'

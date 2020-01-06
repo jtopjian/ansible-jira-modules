@@ -1,0 +1,14 @@
+- name: test jira_get_user_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for admin user
+      jira_get_user_fact:
+        username: admin
+      register: admin_user_results
+
+    - name: Verify result
+      assert:
+        that:
+          - admin_user_results.ansible_facts.jira_user.name == 'admin'

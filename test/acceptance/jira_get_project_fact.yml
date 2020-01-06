@@ -1,0 +1,14 @@
+- name: test jira_get_project_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for a project
+      jira_get_project_fact:
+        key: PROJ
+      register: project_results
+
+    - name: Verify result
+      assert:
+        that:
+          - project_results.ansible_facts.jira_project.key == 'PROJ'
