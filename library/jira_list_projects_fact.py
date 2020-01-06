@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = """
 module: jira_list_projects_fact
 version_added: "0.0.1"
-short_description: list projects in JIRA
+short_description: list projects in Jira
 description:
-  - List projects in JIRA
+  - List projects in Jira
 
 extends_documentation_fragment:
   - jira_modules_common

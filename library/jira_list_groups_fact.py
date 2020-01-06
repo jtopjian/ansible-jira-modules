@@ -15,9 +15,9 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = """
 module: jira_list_groups_fact
 version_added: "0.0.1"
-short_description: list groups in JIRA
+short_description: list groups in Jira
 description:
-  - List groups in JIRA
+  - List groups in Jira
 
 extends_documentation_fragment:
   - jira_modules_common
