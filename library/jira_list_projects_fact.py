@@ -92,11 +92,11 @@ class JiraListProjects(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.module.params.get('expand')
+        v = self.param('expand')
         if v is not None:
             query['expand'] = ','.join(v)
 
-        v = self.module.params.get('include_archived')
+        v = self.param('include_archived')
         if v is not None:
             query['includeArchived'] = v
 

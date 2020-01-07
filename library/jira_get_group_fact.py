@@ -98,21 +98,21 @@ class JiraGetGroup(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.module.params.get('group_name')
+        v = self.param('group_name')
         if v is not None:
             query['groupname'] = v
 
-        v = self.module.params.get('include_inactive_users')
+        v = self.param('include_inactive_users')
         if v is not None:
             query['includeInactiveUsers'] = v
 
-        v = self.module.params.get('max_results')
+        v = self.param('max_results')
         if v is not None:
             query['maxResults'] = v
 
         try:
             group = self.get(urlencode(query))
-            group['name'] = self.module.params.get('group_name')
+            group['name'] = self.param('group_name')
             self.results['ansible_facts']['jira_group'] = group
         except Exception as e:
             self.fail(msg=e.message)

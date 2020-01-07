@@ -100,15 +100,15 @@ class JiraListUsers(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.module.params.get('username')
+        v = self.param('username')
         if v is not None:
             query['username'] = v
 
-        v = self.module.params.get('include_active')
+        v = self.param('include_active')
         if v is not None:
             query['includeActive'] = v
 
-        v = self.module.params.get('include_inactive')
+        v = self.param('include_inactive')
         if v is not None:
             query['includeInactive'] = v
 

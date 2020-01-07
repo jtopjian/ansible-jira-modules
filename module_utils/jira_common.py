@@ -94,7 +94,10 @@ class JiraModuleBase(object):
         else:
             self.module.log(msg)
 
-    def request(self, query=None, data=None, method=None):
+    def param(self, key):
+        return self.module.params.get(key)
+
+    def request(self, query=None, data=None, method='GET'):
         if data:
             data = json.dumps(data)
 
@@ -106,13 +109,16 @@ class JiraModuleBase(object):
         if query is not None:
             url = "%s?%s" % (url, query)
 
-        self.debug(msg="Jira URL request: %s" % (url))
+        self.debug(msg="Jira URL request: %s %s" % (method, url))
 
         auth = basic_auth_header(username, password)
         response, info = fetch_url(
             self.module, url, data=data, method=method, timeout=timeout,
             headers={'Content-Type': 'application/json',
                      'Authorization': auth})
+
+        if info['status'] == 404:
+            return False
 
         if info['status'] not in (200, 201, 204):
             self.fail(msg=info['msg'])
@@ -125,16 +131,19 @@ class JiraModuleBase(object):
         else:
             return {}
 
-    def post(self, query, data):
+    def post(self, data, query=None):
         return self.request(
             query=query, data=data, method='POST')
 
-    def put(self, query, data):
+    def put(self, data, query=None):
         return self.request(
             query=query, data=data, method='PUT')
 
     def get(self, query):
         return self.request(query=query)
+
+    def delete(self, query=None):
+        return self.request(query=query, method='DELETE')
 
 
 def normalize_url(url):

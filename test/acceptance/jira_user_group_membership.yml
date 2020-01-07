@@ -1,0 +1,44 @@
+- name: test jira_user_group_membership
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test user
+      jira_user:
+        username: jdoe
+        email_address: jdoe@example.com
+        password: password
+        display_name: John Doe
+      register: user_results
+
+    - name: Create a Group
+      jira_group:
+        group_name: group_1
+
+    - name: Add user to group
+      jira_user_group_membership:
+        group_name: group_1
+        username: jdoe
+
+    - name: Ensure no changes
+      jira_user_group_membership:
+        group_name: group_1
+        username: jdoe
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == False
+
+    - name: Delete membership
+      jira_user_group_membership:
+        username: jdoe
+        group_name: group_1
+        state: absent
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_user_group_membership_action == 'deleted'

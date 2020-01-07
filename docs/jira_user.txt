@@ -1,0 +1,103 @@
+OPTIONS (= is mandatory):
+
+- active
+        Set the active status of the user.
+        Can be updated.
+        [Default: True]
+        type: bool
+
+- application_keys
+        A list of applications the user has access to.
+        Can be updated.
+        [Default: [u'jira-core']]
+        type: list
+
+- display_name
+        The email address for the user.
+        Can be updated.
+        [Default: (null)]
+
+- email_address
+        The email address for the user.
+        Can be updated.
+        [Default: (null)]
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- key
+        Reference a user via Jira key.
+        Cannot be updated.
+        [Default: (null)]
+
+- password
+        The password for the user.
+        Cannot be updated.
+        [Default: (null)]
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+= username
+        The name of the user.
+        Cannot be updated.
+
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Ensure admin exists
+  jira_user:
+    username: 'admin'
+    password: 'password'
+    email_address: 'admin@example.com'
+    display_name: 'Admin User'
+    application_keys:
+      - 'jira-core'
+
+
+RETURN VALUES:
+
+jira_user:
+  type: dict
+  description:
+    - A Jira user.
+    - See
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/user-getUser
+      for the schema.
+  returned: When a Jira user was detected.
+

@@ -32,3 +32,10 @@ testacc-all: check-auth
 			exit 1 ; \
 		fi ; \
 	done
+
+.PHONY: docs
+docs:
+	for i in $$(ls library); do \
+		m=$$(echo $$i | sed -e 's/.py//g') ; \
+		ansible-doc $$m | sed -e '1,5d' > docs/$$m.txt ; \
+	done

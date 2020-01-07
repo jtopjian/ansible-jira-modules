@@ -1,0 +1,35 @@
+- name: test jira_group
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test group
+      jira_group:
+        group_name: group_1
+      register: group_results
+
+    - name: Check results
+      assert:
+        that:
+          - group_results.jira_group_action == 'created'
+
+    - name: Test no changes
+      jira_group:
+        group_name: group_1
+      register: group_results
+
+    - name: Check results
+      assert:
+        that:
+          - group_results.changed == False
+
+    - name: Delete test group
+      jira_group:
+        group_name: group_1
+        state: absent
+      register: group_results
+
+    - name: Check results
+      assert:
+        that:
+          - group_results.jira_group_action == 'deleted'
