@@ -1,0 +1,79 @@
+OPTIONS (= is mandatory):
+
+- expand
+        A list of fields to expand.
+        Defaults to ['description', 'lead', 'url' ,'projectKeys']
+        [Default: (null)]
+
+- include_archived
+        Include archived projects. Defaults to false.
+        [Default: False]
+        type: bool
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: List Projects
+  jira_list_projects_fact:
+    jira_url: '{{ server }}'
+    jira_username: '{{ user }}'
+    jira_password: '{{ pass }}'
+
+
+RETURN VALUES:
+
+ansible_facts:
+  description: facts to add to ansible_facts
+  returned: always
+  type: complex
+  contains:
+    jira_projects:
+      description:
+      type: list
+        - Maps Jira projects to a non-empty list of dicts with
+          project information.
+        - See
+          https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/project-getAllProjects
+          for the schema.
+      returned: When Jira projects are detected.
+

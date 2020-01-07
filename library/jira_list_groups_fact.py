@@ -96,15 +96,15 @@ class JiraListGroups(JiraModuleBase):
     def exec_module(self, **kwargs):
         query = {}
 
-        q = self.module.params.get('query')
+        q = self.param('query')
         if q:
             query["query"] = q
 
-        exclude = self.module.params.get('exclude')
+        exclude = self.param('exclude')
         if exclude:
             query["exclude"] = exclude
 
-        username = self.module.params.get('username')
+        username = self.param('username')
         if username:
             query["username"] = username
 

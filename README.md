@@ -6,7 +6,7 @@ Ansible modules for interacting with Jira.
 Example Playbook
 ----------------
 
-Example playbook
+Fact Examples
 
     - hosts: localhost
       roles:
@@ -33,83 +33,62 @@ Example playbook
           jira_get_user_fact:
             username: admin
 
-Variables / Arguments / Parameters
------------------------------------------------
+User Management Example
 
-### Shared
+    - host: localhost
+      roles:
+        - jtopjian.jira
+      tasks:
+        - name: Manage a User
+          jira_user:
+            username: jdoe
+            email_address: jdoe@example.com
+            password: password
+            display_name: John Doe
 
-Each module shares the following parameters:
+        - name: Delete a user
+          jira_user:
+            username: jdoe
+            state: absent
 
-* `jira_url`: The URL to the Jira server.
-  Can also be set with JIRA_URL environment variable.
+Group Management Example
 
-* `jira_username`: The username to authenticate with to Jira.
-  Can also be set with JIRA_USERNAME environment variable.
+    - host: localhost
+      roles:
+        - jtopjian.jira
+      tasks:
+        - name: Manage a Group
+          jira_group:
+            group_name: group_1
 
-* `jira_password`: The password to authenticate with to Jira.
-  Can also be set with JIRA_PASSWORD environment variable.
+        - name: Delete a Group
+          jira_group:
+            group_name: group_1
+            state: absent
 
-* `timeout`: A timeout value, in seconds, on requests to the
-  Jira API.
 
-* `validate_certs`: Require valid SSL certificates. Set to false
-  if you'd like to use self-signed certificates. Defaults to true.
+Group Membership Example
 
-### jira_get_group_fact
+    - host: localhost
+      roles:
+        - jtopjian.jira
+      tasks:
+        - name: Ensure a user is in a group
+          jira_user_group_membership:
+            group_name: group_1
+            username: jdoe
 
-* `group_name`: The name of the group to get. Required.
+        - name: Ensure a user is not in a group
+          jira_user_group_membership:
+            group_name: group_1
+            username: jdoe
+            state: absent
 
-* `include_inactive_users`: Whether to include inactive users of the group.
-  Defaults to false.
 
-* `max_results`: The max number of group members to include in the results.
-  Defaults to 50.
+Documentation
+-------------
 
-### jira_get_project_fact
-
-* `project_id`: The ID of the project to query.
-  Mutually exclusive of `key`.
-
-* `key`: The Jira key of the project to query.
-  Mutually exclusive of `project_id`.
-
-* `expand`: A list of fields to have expanded details of.
-  Defaults to ['description', 'lead', 'url', 'projectKeys'].
-
-### jira_get_user_fact
-
-* `username`: The username to query.
-  Mutually exclusive of `key`.
-
-* `key`: The Jira key of the user to query.
-  Mutually exclusive of `username`.
-
-### jira_list_groups_fact
-
-* `query`: A search string to match with a group name.
-
-* `exclude`: A group to exclude from the results.
-
-* `username`: Return groups where the user is a member.
-
-### jira_list_projects_fact
-
-* `expand`: A list of fields to have expanded details of.
-  Defaults to ['description', 'lead', 'url', 'projectKeys'].
-
-* `include_archived`: Whether to include archived projects.
-  Defaults to false.
-
-### jira_list_users_fact
-
-* `username`: A search string to use for hte username.
-  Defaults to "." which will return all users.
-
-* `include_active`: Whether to include active users in the result.
-  Defaults to true.
-
-* `include_inactive`: Whether to include inactive users in the result.
-  Defaults to false.
+See [docs](docs).
 
 License
 -------

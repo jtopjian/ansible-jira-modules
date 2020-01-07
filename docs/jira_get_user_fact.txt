@@ -1,0 +1,79 @@
+OPTIONS (= is mandatory):
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- key
+        Query for a user by their Jira Key.
+        This parameter is mutually exclusive with `username'.
+        [Default: (null)]
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- username
+        Query for a user by their username.
+        This parameter is mutually exclusive with `key'.
+        [Default: (null)]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Get a user
+  jira_get_user_fact:
+    jira_url: '{{ server }}'
+    jira_username: '{{ user }}'
+    jira_password: '{{ pass }}'
+    username: 'admin'
+
+
+RETURN VALUES:
+
+ansible_facts:
+  description: facts to add to ansible_facts
+  returned: always
+  type: complex
+  contains:
+    jira_user:
+      type: dict
+      description:
+        - A Jira user.
+        - See
+          https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/user-getUser
+          for the schema.
+      returned: When a Jira user was detected.
+

@@ -1,0 +1,81 @@
+OPTIONS (= is mandatory):
+
+- exclude
+        A string to exclude matching groups.
+        [Default: (null)]
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- query
+        A search string to match with a group name.
+        [Default: (null)]
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- username
+        Return groups where username is a member.
+        [Default: False]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: List Groups
+  jira_list_groups_fact:
+    jira_url: '{{ server }}'
+    jira_username: '{{ user }}'
+    jira_password: '{{ pass }}'
+
+
+RETURN VALUES:
+
+ansible_facts:
+  description: facts to add to ansible_facts
+  returned: always
+  type: complex
+  contains:
+    jira_groups:
+      type: list
+      description:
+        - Maps Jira groups to a non-empty list of dicts with
+          group information.
+        - See
+          https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/groups-findGroups
+          for the schema.
+      returned: When Jira groups are detected.
+

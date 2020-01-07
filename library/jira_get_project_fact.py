@@ -97,16 +97,16 @@ class JiraGetProject(JiraModuleBase):
         )
 
     def exec_module(self, **kwargs):
-        v = self.module.params.get('project_id')
+        v = self.param('project_id')
         if v is not None:
             self.rest_endpoint = "%s/%s" % (self.rest_endpoint, quote(v))
 
-        v = self.module.params.get('key')
+        v = self.param('key')
         if v is not None:
             self.rest_endpoint = "%s/%s" % (self.rest_endpoint, quote(v))
 
         query = None
-        v = self.module.params.get('expand')
+        v = self.param('expand')
         if v is not None:
             q = {}
             q['expand'] = ','.join(v)

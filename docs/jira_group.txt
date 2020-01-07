@@ -1,0 +1,66 @@
+OPTIONS (= is mandatory):
+
+= group_name
+        The name of the group.
+        Cannot be updated.
+
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Ensure group exists
+  jira_group:
+    group_name: group_1
+
+
+RETURN VALUES:
+
+jira_group:
+  type: dict
+  description:
+    - A Jira group.
+    - See
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/group-getUsersFromGroup
+      for the schema.
+  returned: When a Jira group was detected.
+

@@ -73,6 +73,7 @@ class JiraGetUser(JiraModuleBase):
         self.module_args = dict(
             username=dict(),
             key=dict(),
+            expand=dict(type='list', default=['groups', 'applicationRoles']),
         )
 
         self.results = dict(
@@ -92,13 +93,17 @@ class JiraGetUser(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.module.params.get('username')
+        v = self.param('username')
         if v is not None:
             query['username'] = v
 
-        v = self.module.params.get('key')
+        v = self.param('key')
         if v is not None:
             query['key'] = v
+
+        v = self.param('expand')
+        if v is not None:
+            query['expand'] = ','.join(v)
 
         try:
             user = self.get(urlencode(query))

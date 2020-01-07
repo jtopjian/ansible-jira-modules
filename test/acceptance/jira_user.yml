@@ -1,0 +1,57 @@
+- name: test jira_user
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test user
+      jira_user:
+        username: jdoe
+        email_address: jdoe@example.com
+        password: password
+        display_name: John Doe
+      register: user_results
+
+    - name: Check results
+      assert:
+        that:
+          - user_results.jira_user.name == 'jdoe'
+          - user_results.jira_user.emailAddress == 'jdoe@example.com'
+          - user_results.jira_user_action == 'created'
+
+    - name: Test no changes
+      jira_user:
+        username: jdoe
+        email_address: jdoe@example.com
+        password: password
+        display_name: John Doe
+      register: user_results
+
+    - name: Check results
+      assert:
+        that:
+          - user_results.changed == False
+
+    - name: Update test user
+      jira_user:
+        username: jdoe
+        email_address: jdoe2@example.com
+        password: password
+        display_name: John Doe
+      register: user_results
+
+    - name: Check results
+      assert:
+        that:
+          - user_results.jira_user.emailAddress == 'jdoe2@example.com'
+          - user_results.jira_user_action == 'updated'
+
+    - name: Delete test user
+      jira_user:
+        username: jdoe
+        state: absent
+      register: user_results
+
+    - name: Check results
+      assert:
+        that:
+          - user_results.jira_user_action == 'deleted'
