@@ -1,0 +1,13 @@
+- name: test jira_list_permission_schemes_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for all Permission Schemes
+      jira_list_permission_schemes_fact:
+      register: result
+
+    - name: Validate results
+      assert:
+        that:
+          - result.ansible_facts.jira_permission_schemes.0.name == 'Default Permission Scheme'

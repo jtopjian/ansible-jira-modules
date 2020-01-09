@@ -1,0 +1,7 @@
+- name: test jira_list_issue_security_schemes_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for all Issue Security Schemes
+      jira_list_issue_security_schemes_fact:

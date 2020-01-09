@@ -23,7 +23,7 @@ extends_documentation_fragment:
   - jira_modules_common
 
 options:
-  group_name:
+  name:
     required: true
     description:
       - The name of the group.
@@ -46,7 +46,7 @@ jira_group:
 EXAMPLES = """
 - name: Ensure group exists
   jira_group:
-    group_name: group_1
+    name: group_1
 """
 
 REST_ENDPOINT_CREATE = "rest/api/2/group"
@@ -59,7 +59,7 @@ class JiraGroup(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            group_name=dict(required=True),
+            name=dict(required=True),
             state=dict(
                 required=False,
                 default='present',
@@ -80,12 +80,10 @@ class JiraGroup(JiraModuleBase):
         action = None
         is_install_mode = self.param('state') == 'present'
 
-        query = {}
-        group_name = self.param('group_name')
-
-        v = self.param('group_name')
-        if v is not None:
-            query['groupname'] = v
+        name = self.param('name')
+        query = {
+            'groupname': name,
+        }
 
         query = urlencode(query)
 
@@ -102,16 +100,21 @@ class JiraGroup(JiraModuleBase):
                     action = 'created'
 
             self.results['jira_group_action'] = action
-            self.results['jira_group'] = group
+
             if action is not None:
                 self.results['changed'] = True
+
+            if group is False:
+                del(self.results['jira_group'])
+            else:
+                self.results['jira_group'] = group
 
             if self.check_mode:
                 return
 
             if action == 'created':
                 data = {
-                    'name': group_name,
+                    'name': name,
                 }
 
                 self.rest_endpoint = REST_ENDPOINT_CREATE

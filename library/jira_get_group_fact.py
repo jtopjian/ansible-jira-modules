@@ -78,14 +78,14 @@ class JiraGetGroup(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            group_name=dict(required=True),
-            include_inactive_users=dict(),
-            max_results=dict(),
+            group_name=dict(required=True, _jira_field='groupname'),
+            include_inactive_users=dict(_jira_field='includeInactiveUsers'),
+            max_results=dict(_jira_field='maxResults'),
         )
 
         self.results = dict(
             ansible_facts=dict(
-                jira_group={}
+                jira_group=dict(),
             ),
             changed=False,
         )
@@ -98,22 +98,19 @@ class JiraGetGroup(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.param('group_name')
-        if v is not None:
-            query['groupname'] = v
 
-        v = self.param('include_inactive_users')
-        if v is not None:
-            query['includeInactiveUsers'] = v
-
-        v = self.param('max_results')
-        if v is not None:
-            query['maxResults'] = v
+        for (field, jira_field) in self.jira_fields():
+            v = self.param(field)
+            if v is not None:
+                query[jira_field] = v
 
         try:
             group = self.get(urlencode(query))
-            group['name'] = self.param('group_name')
-            self.results['ansible_facts']['jira_group'] = group
+            if group is False:
+                del(self.results['ansible_facts']['jira_group'])
+            else:
+                group['name'] = self.param('group_name')
+                self.results['ansible_facts']['jira_group'] = group
         except Exception as e:
             self.fail(msg=e.message)
 

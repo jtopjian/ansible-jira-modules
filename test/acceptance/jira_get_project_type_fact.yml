@@ -1,0 +1,14 @@
+- name: test jira_get_project_type_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for project type
+      jira_get_project_type_fact:
+        key: business
+      register: results
+
+    - name: Verify result
+      assert:
+        that:
+          - results.ansible_facts.jira_project_type.key == 'business'

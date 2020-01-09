@@ -1,0 +1,7 @@
+- name: test jira_list_issue_types_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for all Issue Types
+      jira_list_issue_types_fact:

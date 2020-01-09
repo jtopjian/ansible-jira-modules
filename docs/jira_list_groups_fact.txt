@@ -41,7 +41,8 @@ OPTIONS (= is mandatory):
         [Default: False]
 
 - validate_certs
-        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed
+        certificates)
         [Default: True]
         type: bool
 

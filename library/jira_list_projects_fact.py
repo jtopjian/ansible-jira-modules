@@ -23,12 +23,6 @@ extends_documentation_fragment:
   - jira_modules_common
 
 options:
-  expand:
-    required: false
-    description:
-      - A list of fields to expand.
-      - Defaults to ['description', 'lead', 'url' ,'projectKeys']
-
   include_archived:
     required: false
     description:
@@ -72,8 +66,6 @@ class JiraListProjects(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            expand=dict(required=False, type='list',
-                        default=['description', 'lead', 'url', 'projectKeys']),
             include_archived=dict(required=False, type='bool', default=False),
         )
 
@@ -91,18 +83,20 @@ class JiraListProjects(JiraModuleBase):
         )
 
     def exec_module(self, **kwargs):
-        query = {}
-        v = self.param('expand')
-        if v is not None:
-            query['expand'] = ','.join(v)
+        query = {
+            'expand': ','.join(['description', 'lead', 'url', 'projectKeys'])
+        }
 
         v = self.param('include_archived')
         if v is not None:
             query['includeArchived'] = v
 
         try:
-            projects = self.get(urlencode(query))
-            self.results['ansible_facts']['jira_projects'] = projects
+            v = self.get(urlencode(query))
+            if v is False:
+                del(self.results['ansible_facts']['jira_projects'])
+            else:
+                self.results['ansible_facts']['jira_projects'] = v
         except Exception as e:
             self.fail(msg=e.message)
 

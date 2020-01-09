@@ -1,0 +1,87 @@
+OPTIONS (= is mandatory):
+
+- default_workflow
+        The ID of the workflow to use as the default workflow.
+        [Default: (null)]
+
+- description
+        The description of the workflow scheme
+        [Default: (null)]
+
+- id
+        An integer ID for the workflow scheme.
+        An existing workflow scheme can only be updated and deleted by an ID. Therefore, the
+        workflow scheme ID needs to be recorded / hard-coded at some point in its lifecycle.
+        Cannot be updated.
+        [Default: (null)]
+        type: int
+
+- issue_type_mappings
+        Issue mappings for the workflow scheme.
+        [Default: (null)]
+        type: dict
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+= name
+        The name of the workflow scheme.
+
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed
+        certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Ensure workflow scheme exists
+  jira_workflow_scheme:
+    name: workflow_scheme_1
+
+
+RETURN VALUES:
+
+jira_workflow_scheme:
+  type: dict
+  description:
+    - A Jira workflow scheme.
+    - See
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/workflowscheme-getById
+      for the schema.
+  returned: When a Jira workflow scheme was detected.
+

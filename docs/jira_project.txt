@@ -1,0 +1,141 @@
+OPTIONS (= is mandatory):
+
+- avatar_id
+        The ID of the avatar to use.
+        Can be updated.
+        [Default: (null)]
+
+- category_id
+        The ID of the category to use.
+        Can be updated.
+        [Default: (null)]
+
+- description
+        A description of the project.
+        Can be updated.
+        [Default: (null)]
+
+- issue_security_scheme
+        The ID of the issue security scheme to use.
+        Can be updated.
+        [Default: (null)]
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+= key
+        The Jira key for the project.
+        Cannot be updated.
+
+
+= lead
+        A username of the project lead.
+        Can be updated.
+
+
+= name
+        The name of the project.
+        Cannot be updated.
+
+
+- notification_scheme
+        The ID of the notification scheme to use.
+        Can be updated.
+        [Default: (null)]
+
+- permission_scheme
+        The ID of the permission scheme to use.
+        Can be updated.
+        [Default: (null)]
+
+- project_template_key
+        The Jira key for the project template.
+        There is no way to poll Jira for templates via the API. The following are a reference.
+        software
+        com.pyxis.greenhopper.jira:gh-scrum-template
+        com.pyxis.greenhopper.jira:gh-kanban-template
+        com.pyxis.greenhopper.jira:basic-software-development-template
+        business
+        com.atlassian.jira-core-project-templates:jira-core-project-management
+        com.atlassian.jira-core-project-templates:jira-core-task-management
+        com.atlassian.jira-core-project-templates:jira-core-process-management
+        service Desk
+        com.atlassian.servicedesk:classic-service-desk-project
+        com.atlassian.servicedesk:itil-service-desk-project
+        Cannot be updated.
+        This paramter is mutally exclusive with `project_type_key'.
+        [Default: (null)]
+
+- project_type_key
+        The Jira key for the project type.
+        Cannot be updated.
+        This paramter is mutally exclusive with `project_template_key'.
+        [Default: (null)]
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- url
+        A URL for the project.
+        Can be updated.
+        [Default: (null)]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed
+        certificates)
+        [Default: True]
+        type: bool
+
+- workflow_scheme_id
+        The ID of the workflow scheme to use.
+        Can be not updated.
+        [Default: (null)]
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Ensure project exists
+  jira_project:
+    name: project_1
+
+
+RETURN VALUES:
+
+jira_project:
+  type: dict
+  description:
+    - A Jira project.
+    - See
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/project-getProject
+      for the schema.
+  returned: When a Jira project was detected.
+

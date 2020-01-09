@@ -5,7 +5,7 @@
   tasks:
     - name: Create test group
       jira_group:
-        group_name: group_1
+        name: group_1
       register: group_results
 
     - name: Check results
@@ -15,7 +15,7 @@
 
     - name: Test no changes
       jira_group:
-        group_name: group_1
+        name: group_1
       register: group_results
 
     - name: Check results
@@ -25,7 +25,7 @@
 
     - name: Delete test group
       jira_group:
-        group_name: group_1
+        name: group_1
         state: absent
       register: group_results
 

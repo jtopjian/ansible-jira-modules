@@ -1,0 +1,40 @@
+- name: test jira_workflow_scheme
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test workflow scheme
+      jira_workflow_scheme:
+        name: workflow_scheme_1
+        description: A test workflow scheme
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_workflow_scheme.name == 'workflow_scheme_1'
+          - results.jira_workflow_scheme_action == 'created'
+
+    - name: Test no changes
+      jira_workflow_scheme:
+        name: workflow_scheme_1
+        id: '{{ results.jira_workflow_scheme.id }}'
+        description: A test workflow scheme
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == False
+
+    - name: Delete workflow scheme
+      jira_workflow_scheme:
+        name: workflow_scheme_1
+        id: '{{ results.jira_workflow_scheme.id }}'
+        state: absent
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_workflow_scheme_action == 'deleted'

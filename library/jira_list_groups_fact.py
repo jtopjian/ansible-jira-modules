@@ -75,9 +75,9 @@ class JiraListGroups(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            query=dict(required=False),
-            exclude=dict(required=False),
-            username=dict(required=False),
+            query=dict(required=False, _jira_field='query'),
+            exclude=dict(required=False, _jira_field='exclude'),
+            username=dict(required=False, _jira_field='username'),
         )
 
         self.results = dict(
@@ -96,21 +96,17 @@ class JiraListGroups(JiraModuleBase):
     def exec_module(self, **kwargs):
         query = {}
 
-        q = self.param('query')
-        if q:
-            query["query"] = q
-
-        exclude = self.param('exclude')
-        if exclude:
-            query["exclude"] = exclude
-
-        username = self.param('username')
-        if username:
-            query["username"] = username
+        for (field, jira_field) in self.jira_fields():
+            v = self.param(field)
+            if v:
+                query[jira_field] = v
 
         try:
-            groups = self.get(urlencode(query))
-            self.results['ansible_facts']['jira_groups'] = groups['groups']
+            v = self.get(urlencode(query))
+            if v is False:
+                del(self.results['ansible_facts']['jira_groups'])
+            else:
+                self.results['ansible_facts']['jira_groups'] = v['groups']
         except Exception as e:
             self.fail(msg=e.message)
 

@@ -1,0 +1,13 @@
+- name: test jira_list_notification_schemes_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for all Notification Schemes
+      jira_list_notification_schemes_fact:
+      register: result
+
+    - name: Verify the results
+      assert:
+        that:
+          - result.ansible_facts.jira_notification_schemes["values"].0.name == 'Default Notification Scheme'

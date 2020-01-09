@@ -1,0 +1,13 @@
+- name: test jira_list_workflow_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for all workflows
+      jira_list_workflow_fact:
+      register: result
+
+    - name: Validate results
+      assert:
+        that:
+          - result.ansible_facts.jira_workflows.0.name == 'jira'

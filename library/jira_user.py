@@ -103,13 +103,38 @@ class JiraUser(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            username=dict(required=True),
-            key=dict(),
-            password=dict(no_log=True),
-            email_address=dict(),
-            display_name=dict(),
-            application_keys=dict(type='list', default=['jira-core']),
-            active=dict(type='bool', default=True),
+            username=dict(
+                required=True,
+                _jira_field='username',
+                _jira_update=False),
+
+            key=dict(_jira_field='key', _jira_update=False),
+
+            password=dict(
+                no_log=True,
+                _jira_field='password',
+                _jira_update=False),
+
+            email_address=dict(
+                _jira_field='emailAddress',
+                _jira_update=True),
+
+            display_name=dict(
+                _jira_field='displayName',
+                _jira_update=True),
+
+            active=dict(
+                type='bool',
+                default=True,
+                _jira_field='active',
+                _jira_update=True),
+
+            application_keys=dict(
+                type='list',
+                default=['jira-core'],
+                _jira_field='applicationKeys',
+                _jira_update=True),
+
             state=dict(
                 required=False,
                 default='present',
@@ -156,39 +181,30 @@ class JiraUser(JiraModuleBase):
                 if user is False:
                     action = 'created'
                 else:
-                    self.results['jira_user'] = user
+                    # Detect updates
+                    for (v, jira_field) in self.jira_update_fields():
+                        if v == 'application_keys':
+                            _application_keys = []
+                            if 'items' in user['applicationRoles']:
+                                for item in user['applicationRoles']['items']:
+                                    _application_keys.append(item['key'])
 
-                    display_name = self.param('display_name')
-                    _display_name = user['displayName']
-
-                    if display_name != _display_name:
-                        update_dict['displayName'] = display_name
-
-                    email_address = self.param('email_address')
-                    _email_address = user['emailAddress']
-                    if email_address != _email_address:
-                        update_dict['emailAddress'] = email_address
-
-                    active = self.param('active')
-                    _active = user['active']
-                    if active != _active:
-                        update_dict['active'] = active
-
-                    application_keys = self.param('application_keys')
-                    _application_roles = user['applicationRoles']
-                    _application_keys = []
-                    if 'items' in _application_roles:
-                        for item in _application_roles['items']:
-                            _application_keys.append(item['key'])
-
-                    if set(application_keys) != set(_application_keys):
-                        update_dict['application_keys'] = application_keys
+                            if set(self.param(v)) != set(_application_keys):
+                                update_dict[jira_field] = self.param(v)
+                        else:
+                            if self.param(v) != user[jira_field]:
+                                update_dict[jira_field] = self.param(v)
 
                     if len(update_dict) > 0:
                         action = 'updated'
 
             self.results['jira_user_action'] = action
-            self.results['jira_user'] = user
+
+            if user is False:
+                del(self.results['jira_user'])
+            else:
+                self.results['jira_user'] = user
+
             if action is not None:
                 self.results['changed'] = True
 
@@ -196,20 +212,18 @@ class JiraUser(JiraModuleBase):
                 return
 
             if action == 'created':
-                data = {
-                    'name': username,
-                    'emailAddress': self.param('email_address'),
-                    'displayName': self.param('display_name'),
-                    'applicationKeys': self.param('application_keys'),
-                }
+                data = {}
+                for (v, jira_field) in self.jira_fields():
+                    if self.param(v):
+                        data[jira_field] = self.param(v)
 
                 self.post(data)
                 user = self.get(query)
-                self.results['jira_user'] = user
                 return
 
             if action == 'updated':
                 self.put(update_dict, query=query)
+
                 user = self.get(query)
                 self.results['jira_user'] = user
                 return

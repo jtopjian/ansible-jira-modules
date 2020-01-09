@@ -51,6 +51,25 @@ class JiraModuleBase(object):
         self.fail("Error: {0} failed to implement exec_module method.".format(
             self.__class__.__name__))
 
+    def jira_fields(self):
+        fields = []
+        for field in self.module_args:
+            field_args = self.module_args[field]
+            if '_jira_field' in field_args:
+                jira_field = field_args['_jira_field']
+                fields.append([field, jira_field])
+        return fields
+
+    def jira_update_fields(self):
+        fields = []
+        for field in self.module_args:
+            field_args = self.module_args[field]
+            if '_jira_field' in field_args:
+                jira_field = field_args['_jira_field']
+                if field_args['_jira_update']:
+                    fields.append([field, jira_field])
+        return fields
+
     def get_connection_info(self):
         url = self.module.params.get('jira_url')
         if not url:
@@ -139,7 +158,7 @@ class JiraModuleBase(object):
         return self.request(
             query=query, data=data, method='PUT')
 
-    def get(self, query):
+    def get(self, query=None):
         return self.request(query=query)
 
     def delete(self, query=None):

@@ -1,0 +1,77 @@
+OPTIONS (= is mandatory):
+
+- id
+        Query for a role by its ID.
+        This parameter is mutually exclusive with `name'.
+        [Default: (null)]
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- name
+        Query for a role by its name.
+        This parameter is mutually exclusive with `id'.
+        [Default: (null)]
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed
+        certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Get a role
+  jira_get_role_fact:
+    name: 'Administrators'
+
+
+RETURN VALUES:
+
+ansible_facts:
+  description: facts to add to ansible_facts
+  returned: always
+  type: complex
+  contains:
+    jira_role:
+      type: dict
+      description:
+        - A Jira role.
+        - See
+          https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/role-getProjectRolesById
+          for the schema.
+      returned: When a Jira role was detected.
+

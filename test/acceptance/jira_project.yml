@@ -1,0 +1,59 @@
+- name: test jira_project
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test project
+      jira_project:
+        name: project_1
+        key: PRJ1
+        project_type_key: business
+        lead: admin
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_project.name == 'project_1'
+
+    - name: Test no changes
+      jira_project:
+        name: project_1
+        key: PRJ1
+        project_type_key: business
+        lead: admin
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == False
+
+    - name: Update test project
+      jira_project:
+        name: project_1
+        key: PRJ1
+        project_type_key: business
+        lead: suser
+        description: Some test project
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_project.description == 'Some test project'
+          - results.jira_project_action == 'updated'
+
+    - name: Delete test project
+      jira_project:
+        name: project_1
+        project_type_key: business
+        key: PRJ1
+        lead: admin
+        state: absent
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_project_action == 'deleted'

@@ -1,10 +1,5 @@
 OPTIONS (= is mandatory):
 
-= group_name
-        The name of the group.
-        Cannot be updated.
-
-
 = jira_password
         The password to authenticate with
 
@@ -29,12 +24,18 @@ OPTIONS (= is mandatory):
           - JIRA_USERNAME
         
 
+= name
+        The name of the group.
+        Cannot be updated.
+
+
 - timeout
         Set timeout, in seconds, on requests to Jira API.
         [Default: 10]
 
 - validate_certs
-        Require valid SSL certificates (set to `false` if you'd like to use self-signed certificates)
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed
+        certificates)
         [Default: True]
         type: bool
 
@@ -50,7 +51,7 @@ EXAMPLES:
 
 - name: Ensure group exists
   jira_group:
-    group_name: group_1
+    name: group_1
 
 
 RETURN VALUES:

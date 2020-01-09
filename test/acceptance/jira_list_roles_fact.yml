@@ -1,0 +1,13 @@
+- name: test jira_list_roles_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for roles
+      jira_list_roles_fact:
+      register: results
+
+    - name: Verify result
+      assert:
+        that:
+          - results.ansible_facts.jira_roles.0.name == 'Administrators'

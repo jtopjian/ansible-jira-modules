@@ -80,9 +80,18 @@ class JiraListUsers(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            username=dict(required=False, default='.'),
-            include_active=dict(required=False, type='bool', default=True),
-            include_inactive=dict(required=False, type='bool', default=False),
+            username=dict(required=False, default='.', _jira_field='username'),
+            include_active=dict(
+                required=False,
+                type='bool',
+                default=True,
+                _jira_field='includeActive'),
+
+            include_inactive=dict(
+                required=False,
+                type='bool',
+                default=False,
+                _jira_field='includeInactive'),
         )
 
         self.results = dict(
@@ -100,21 +109,18 @@ class JiraListUsers(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.param('username')
-        if v is not None:
-            query['username'] = v
 
-        v = self.param('include_active')
-        if v is not None:
-            query['includeActive'] = v
-
-        v = self.param('include_inactive')
-        if v is not None:
-            query['includeInactive'] = v
+        for (field, jira_field) in self.jira_fields():
+            v = self.param(field)
+            if v is not None:
+                query[jira_field] = v
 
         try:
-            users = self.get(urlencode(query))
-            self.results['ansible_facts']['jira_users'] = users
+            v = self.get(urlencode(query))
+            if v is False:
+                del(self.results['ansible_facts']['jira_users'])
+            else:
+                self.results['ansible_facts']['jira_users'] = v
         except Exception as e:
             self.fail(msg=e.message)
 

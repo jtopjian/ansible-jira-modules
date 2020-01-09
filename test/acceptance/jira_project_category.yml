@@ -1,0 +1,51 @@
+- name: test jira_project_category
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test project category
+      jira_project_category:
+        name: project_category_1
+        description: A project category
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_project_category_action == 'created'
+          - results.jira_project_category.name == 'project_category_1'
+
+    - name: Test no changes
+      jira_project_category:
+        name: project_category_1
+        description: A project category
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == False
+
+    - name: Test update
+      jira_project_category:
+        name: project_category_1
+        description: Some project category
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == True
+          - results.jira_project_category.description == 'Some project category'
+
+    - name: Delete test project category
+      jira_project_category:
+        name: project_category_1
+        description: A project category
+        state: absent
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_project_category_action == 'deleted'

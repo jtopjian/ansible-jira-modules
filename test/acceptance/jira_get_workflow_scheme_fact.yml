@@ -1,0 +1,14 @@
+- name: test jira_get_workflow_scheme_fact
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Query for workflow scheme
+      jira_get_workflow_scheme_fact:
+        id: 10000
+      register: result
+
+    - name: Verify result
+      assert:
+        that:
+          - result.ansible_facts.jira_workflow_scheme.id == 10000

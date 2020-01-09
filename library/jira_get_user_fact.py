@@ -71,9 +71,8 @@ class JiraGetUser(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            username=dict(),
-            key=dict(),
-            expand=dict(type='list', default=['groups', 'applicationRoles']),
+            username=dict(_jira_field='username'),
+            key=dict(_jira_field='key'),
         )
 
         self.results = dict(
@@ -93,21 +92,19 @@ class JiraGetUser(JiraModuleBase):
 
     def exec_module(self, **kwargs):
         query = {}
-        v = self.param('username')
-        if v is not None:
-            query['username'] = v
+        for (field, jira_field) in self.jira_fields():
+            v = self.param(field)
+            if v is not None:
+                query[jira_field] = v
 
-        v = self.param('key')
-        if v is not None:
-            query['key'] = v
-
-        v = self.param('expand')
-        if v is not None:
-            query['expand'] = ','.join(v)
+        query['expand'] = ','.join(['groups', 'applicationRoles'])
 
         try:
-            user = self.get(urlencode(query))
-            self.results['ansible_facts']['jira_user'] = user
+            v = self.get(urlencode(query))
+            if v is False:
+                del(self.results['ansible_facts']['jira_user'])
+            else:
+                self.results['ansible_facts']['jira_user'] = v
         except Exception as e:
             self.fail(msg=e.message)
 

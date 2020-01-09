@@ -23,7 +23,7 @@ extends_documentation_fragment:
   - jira_modules_common
 
 options:
-  project_id:
+  id:
     required: false
     description:
       - Query for a project by its ID.
@@ -34,12 +34,6 @@ options:
     description:
       - Query for a project by its Jira Key.
       - This parameter is mutually exclusive with C(id).
-
-  expand:
-    required: false
-    description:
-      - A list of fields to expand.
-      - Defaults to ['description', 'lead', 'url' ,'projectKeys']
 
 author: "Joe Topjian <joe@topjian.net>"
 """
@@ -77,7 +71,7 @@ class JiraGetProject(JiraModuleBase):
 
     def __init__(self):
         self.module_args = dict(
-            project_id=dict(),
+            id=dict(),
             key=dict(),
         )
 
@@ -91,13 +85,13 @@ class JiraGetProject(JiraModuleBase):
         super(JiraGetProject, self).__init__(
             derived_arg_spec=self.module_args,
             facts_module=True,
-            mutually_exclusive=[['project_id', 'key']],
-            required_one_of=[['project_id', 'key']],
+            mutually_exclusive=[['id', 'key']],
+            required_one_of=[['id', 'key']],
             rest_endpoint=REST_ENDPOINT,
         )
 
     def exec_module(self, **kwargs):
-        v = self.param('project_id')
+        v = self.param('id')
         if v is not None:
             self.rest_endpoint = "%s/%s" % (self.rest_endpoint, quote(v))
 
@@ -105,16 +99,17 @@ class JiraGetProject(JiraModuleBase):
         if v is not None:
             self.rest_endpoint = "%s/%s" % (self.rest_endpoint, quote(v))
 
-        query = None
-        v = self.param('expand')
-        if v is not None:
-            q = {}
-            q['expand'] = ','.join(v)
-            query = urlencode(q)
+        q = {
+            'expand': ','.join(['description', 'lead', 'url', 'projectKeys'])
+        }
+        query = urlencode(q)
 
         try:
-            project = self.get(query)
-            self.results['ansible_facts']['jira_project'] = project
+            v = self.get(query)
+            if v is False:
+                del(self.results['ansible_facts']['jira_project'])
+            else:
+                self.results['ansible_facts']['jira_project'] = v
         except Exception as e:
             self.fail(msg=e.message)
 
