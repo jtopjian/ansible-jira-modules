@@ -105,7 +105,7 @@ class JiraUser(JiraModuleBase):
         self.module_args = dict(
             username=dict(
                 required=True,
-                _jira_field='username',
+                _jira_field='name',
                 _jira_update=False),
 
             key=dict(_jira_field='key', _jira_update=False),
@@ -214,11 +214,14 @@ class JiraUser(JiraModuleBase):
             if action == 'created':
                 data = {}
                 for (v, jira_field) in self.jira_fields():
+                    if jira_field == "active":
+                        continue
                     if self.param(v):
                         data[jira_field] = self.param(v)
 
                 self.post(data)
                 user = self.get(query)
+                self.results['jira_user'] = user
                 return
 
             if action == 'updated':

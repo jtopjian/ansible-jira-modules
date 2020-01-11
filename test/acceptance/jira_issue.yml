@@ -1,0 +1,81 @@
+- name: test jira_issue
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test project
+      jira_project:
+        name: project_1
+        key: PRJ1
+        project_type_key: business
+        lead: admin
+      register: project_results
+
+    - name: Check results
+      assert:
+        that:
+          - project_results.jira_project.name == 'project_1'
+
+    - name: Create issue
+      jira_issue:
+        summary: Test issue
+        issue_type: Task
+        description: This is a test issue
+        project_key: '{{ project_results.jira_project.key }}'
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_issue_action == 'created'
+          - results.jira_issue.fields.summary == 'Test issue'
+
+    - name: Test for no changes
+      jira_issue:
+        key: '{{ results.jira_issue.key }}'
+        summary: Test issue
+        issue_type: Task
+        description: This is a test issue
+        project_key: '{{ project_results.jira_project.key }}'
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == False
+          - results.jira_issue.fields.summary == 'Test issue'
+
+    - name: Test JQL
+      jira_jql_fact:
+        jql: |
+          project = '{{ project_results.jira_project.key }}' and summary ~ "Test issue"
+      register: jql_results
+
+    - name: Check results
+      assert:
+        that:
+          - jql_results.ansible_facts.jira_jql_results.issues.0.key == results.jira_issue.key
+
+    - name: Delete test issue
+      jira_issue:
+        key: '{{ results.jira_issue.key }}'
+        summary: Test issue
+        issue_type: Task
+        description: This is a test issue
+        project_key: '{{ project_results.jira_project.key }}'
+        state: absent
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_issue_action == 'deleted'
+
+    - name: Delete test project
+      jira_project:
+        name: project_1
+        project_type_key: business
+        key: PRJ1
+        lead: admin
+        state: absent
+      register: results

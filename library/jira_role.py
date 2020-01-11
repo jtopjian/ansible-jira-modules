@@ -12,11 +12,11 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 
 DOCUMENTATION = """
-module: jira_project_category
+module: jira_role
 version_added: "0.0.1"
-short_description: manage a project category in Jira
+short_description: manage a role in Jira
 description:
-  - Manage a project category in Jira
+  - Manage a role in Jira
 
 extends_documentation_fragment:
   - jira_modules_common
@@ -25,41 +25,41 @@ options:
   name:
     required: true
     description:
-      - The name of the project category.
+      - The name of the role.
       - Cannot be updated.
 
   description:
     required: false
     description:
-      - The description of the project category
+      - The description of the role.
       - Can be updated.
 
 author: "Joe Topjian <joe@topjian.net>"
 """
 
 RETURN = """
-jira_project:
+jira_role:
   type: dict
   description:
-    - A Jira project.
+    - A Jira role.
     - See
-      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/projectCategory-getProjectCategoryById
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/role-getProjectRolesById
       for the schema.
-  returned: When a Jira project category was detected.
+  returned: When a Jira role was detected.
 """
 
 EXAMPLES = """
-- name: Ensure project category exists
-  jira_project_category:
-    name: Internal Projects
-    description: A category for internal projects
+- name: Ensure role exists
+  jira_role:
+    name: Some Role
+    description: A role
 """
 
-REST_ENDPOINT = "rest/api/2/projectCategory"
+REST_ENDPOINT = "rest/api/2/role"
 
 
-class JiraProjectCategory(JiraModuleBase):
-    """Utility class to manage a Jira project category"""
+class JiraRole(JiraModuleBase):
+    """Utility class to manage a Jira role"""
 
     def __init__(self):
         self.module_args = dict(
@@ -80,24 +80,24 @@ class JiraProjectCategory(JiraModuleBase):
         )
 
         self.results = dict(
-            jira_project_category=dict(),
+            jira_role=dict(),
             changed=False,
         )
 
-        super(JiraProjectCategory, self).__init__(
+        super(JiraRole, self).__init__(
             derived_arg_spec=self.module_args,
             rest_endpoint=REST_ENDPOINT,
         )
 
     def find_id(self):
         self.rest_endpoint = REST_ENDPOINT
-        cats = self.get()
+        roles = self.get()
         name = self.param('name')
 
         id = None
-        for cat in cats:
-            if cat["name"] == name:
-                id = cat["id"]
+        for role in roles:
+            if role["name"] == name:
+                id = role["id"]
 
         return id
 
@@ -110,34 +110,34 @@ class JiraProjectCategory(JiraModuleBase):
         try:
             id = self.find_id()
             if id is None:
-                pcat = False
+                role = False
             else:
                 self.rest_endpoint = "%s/%s" % (REST_ENDPOINT, id)
-                pcat = self.get()
+                role = self.get()
 
             if not is_install_mode:
-                if pcat is False:
+                if role is False:
                     return
                 action = 'deleted'
             else:
-                if pcat is False:
+                if role is False:
                     action = 'created'
                 else:
                     # Detect updates
                     for (v, jira_field) in self.jira_update_fields():
-                        if jira_field in pcat:
-                            if self.param(v) != pcat[jira_field]:
+                        if jira_field in role:
+                            if self.param(v) != role[jira_field]:
                                 update_dict[jira_field] = self.param(v)
 
                     if len(update_dict) > 0:
                         action = 'updated'
 
-            self.results['jira_project_category_action'] = action
+            self.results['jira_role_action'] = action
 
-            if pcat is False:
-                del(self.results['jira_project_category'])
+            if role is False:
+                del(self.results['jira_role'])
             else:
-                self.results['jira_project_category'] = pcat
+                self.results['jira_role'] = role
 
             if action is not None:
                 self.results['changed'] = True
@@ -152,25 +152,25 @@ class JiraProjectCategory(JiraModuleBase):
                         data[jira_field] = self.param(v)
 
                 self.rest_endpoint = REST_ENDPOINT
-                pcat = self.post(data)
-                self.results['jira_project_category'] = pcat
+                role = self.post(data)
+                self.results['jira_role'] = role
                 return
 
             if action == 'updated':
                 id = self.find_id()
                 if id is None:
-                    self.fail("Unable to find Jira project category %s" % (
+                    self.fail("Unable to find Jira role %s" % (
                         self.param('name')))
                 self.rest_endpoint = "%s/%s" % (REST_ENDPOINT, id)
-                pcat = self.put(update_dict)
-                pcat = self.get()
-                self.results['jira_project_category'] = pcat
+                role = self.post(update_dict)
+                role = self.get()
+                self.results['jira_role'] = role
                 return
 
             if action == 'deleted':
                 id = self.find_id()
                 if id is None:
-                    self.fail("Unable to find Jira project category %s" % (
+                    self.fail("Unable to find Jira role %s" % (
                         self.param('name')))
                 self.rest_endpoint = "%s/%s" % (REST_ENDPOINT, id)
                 self.delete()
@@ -181,4 +181,4 @@ class JiraProjectCategory(JiraModuleBase):
 
 
 if __name__ == '__main__':
-    JiraProjectCategory()
+    JiraRole()

@@ -1,8 +1,8 @@
 OPTIONS (= is mandatory):
 
-- description
-        The description of the project category
-        Can be updated.
+- fields
+        The list of fields to return.
+        By default, all fields are returned.
         [Default: (null)]
 
 = jira_password
@@ -29,10 +29,14 @@ OPTIONS (= is mandatory):
           - JIRA_USERNAME
         
 
-= name
-        The name of the project category.
-        Cannot be updated.
+= jql
+        The JQL query to run
 
+
+- max_results
+        The max number of users to include in the result.
+        [Default: 50]
+        type: int
 
 - timeout
         Set timeout, in seconds, on requests to Jira API.
@@ -42,6 +46,11 @@ OPTIONS (= is mandatory):
         Require valid SSL certificates (set to `false` if you'd like to use self-signed
         certificates)
         [Default: True]
+        type: bool
+
+- validate_query
+        Whether to validate the given JQL query or not.
+        [Default: (null)]
         type: bool
 
 
@@ -54,20 +63,24 @@ AUTHOR: Joe Topjian <joe@topjian.net>
 
 EXAMPLES:
 
-- name: Ensure project category exists
-  jira_project_category:
-    name: Internal Projects
-    description: A category for internal projects
+- name: Run a JQL query
+  jira_jql_fact:
+    jql: "project in (PRJ1)"
 
 
 RETURN VALUES:
 
-jira_project:
-  type: dict
-  description:
-    - A Jira project.
-    - See
-      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/projectCategory-getProjectCategoryById
-      for the schema.
-  returned: When a Jira project category was detected.
+ansible_facts:
+  description: facts to add to ansible_facts
+  returned: always
+  type: complex
+  contains:
+    jira_jql_results:
+      type: dict
+      description:
+        - The results of the Jira JQL query.
+        - See
+          https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/search-search
+          for the schema.
+      returned: When a Jira JQL query returned results.
 

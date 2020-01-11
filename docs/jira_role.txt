@@ -1,7 +1,7 @@
 OPTIONS (= is mandatory):
 
 - description
-        The description of the project category
+        The description of the role.
         Can be updated.
         [Default: (null)]
 
@@ -30,7 +30,7 @@ OPTIONS (= is mandatory):
         
 
 = name
-        The name of the project category.
+        The name of the role.
         Cannot be updated.
 
 
@@ -54,20 +54,20 @@ AUTHOR: Joe Topjian <joe@topjian.net>
 
 EXAMPLES:
 
-- name: Ensure project category exists
-  jira_project_category:
-    name: Internal Projects
-    description: A category for internal projects
+- name: Ensure role exists
+  jira_role:
+    name: Some Role
+    description: A role
 
 
 RETURN VALUES:
 
-jira_project:
+jira_role:
   type: dict
   description:
-    - A Jira project.
+    - A Jira role.
     - See
-      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/projectCategory-getProjectCategoryById
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/role-getProjectRolesById
       for the schema.
-  returned: When a Jira project category was detected.
+  returned: When a Jira role was detected.
 

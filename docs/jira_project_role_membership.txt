@@ -1,0 +1,99 @@
+OPTIONS (= is mandatory):
+
+- groups
+        Groups to belong to the role
+        Can be updated.
+        [Default: (null)]
+
+= jira_password
+        The password to authenticate with
+
+        set_via:
+          env:
+          - JIRA_PASSWORD
+        
+
+= jira_url
+        The URL of the Jira service.
+
+        set_via:
+          env:
+          - JIRA_URL
+        
+
+= jira_username
+        The username to connect to Jira with.
+
+        set_via:
+          env:
+          - JIRA_USERNAME
+        
+
+- project_id
+        The ID of the project.
+        Cannot be updated.
+        This parameter is mutually exclusive with `project_key'
+        [Default: (null)]
+
+- project_key
+        The Jira key of the project.
+        Cannot be updated.
+        This parameter is mutually exclusive with `project_id'
+        [Default: (null)]
+
+- role_id
+        The ID of the Jira role
+        Cannot be updated.
+        This parameter is mutually exclusive with `role_name'
+        [Default: (null)]
+
+- role_name
+        The name of the Jira role
+        Cannot be updated.
+        This parameter is mutually exclusive with `role_id'
+        [Default: (null)]
+
+- timeout
+        Set timeout, in seconds, on requests to Jira API.
+        [Default: 10]
+
+- users
+        Users to belong to the role
+        Can be updated.
+        [Default: (null)]
+
+- validate_certs
+        Require valid SSL certificates (set to `false` if you'd like to use self-signed
+        certificates)
+        [Default: True]
+        type: bool
+
+
+AUTHOR: Joe Topjian <joe@topjian.net>
+        METADATA:
+          status:
+          - preview
+          supported_by: community
+        
+
+EXAMPLES:
+
+- name: Ensure project role membership exists
+  jira_project_role_membership:
+    project_key: PRJ1
+    role_name: Administrators
+    users:
+      - admin
+
+
+RETURN VALUES:
+
+jira_project_role_membership:
+  type: dict
+  description:
+    - A Jira project role membership.
+    - See
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/project/{projectIdOrKey}/role-getProjectRole
+      for the schema.
+  returned: When a Jira project role membership was detected.
+

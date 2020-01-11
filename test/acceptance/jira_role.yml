@@ -1,0 +1,51 @@
+- name: test jira_role
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+    - name: Create test role
+      jira_role:
+        name: role_1
+        description: A role
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_role_action == 'created'
+          - results.jira_role.name == 'role_1'
+
+    - name: Test no changes
+      jira_role:
+        name: role_1
+        description: A role
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == False
+
+    - name: Test update
+      jira_role:
+        name: role_1
+        description: Some role
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.changed == True
+          - results.jira_role.description == 'Some role'
+
+    - name: Delete test role
+      jira_role:
+        name: role_1
+        description: A role
+        state: absent
+      register: results
+
+    - name: Check results
+      assert:
+        that:
+          - results.jira_role_action == 'deleted'

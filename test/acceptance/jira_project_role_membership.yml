@@ -1,0 +1,95 @@
+- name: test jira_project_role_membership
+  hosts: localhost
+  roles:
+    - jtopjian.jira_modules
+  tasks:
+
+    - name: Create test user
+      jira_user:
+        username: auser
+        email_address: auser@example.com
+        password: password
+        display_name: A User
+      register: user_results
+
+    - name: Create test group
+      jira_group:
+        name: group_1
+      register: group_results
+
+    - name: Create test project
+      jira_project:
+        name: project_1
+        key: PRJ1
+        project_type_key: business
+        lead: admin
+      register: project_results
+
+    - name: Add users and groups to project
+      jira_project_role_membership:
+        project_key: PRJ1
+        role_name: Administrators
+        users:
+          - auser
+        groups:
+          - group_1
+      register: results
+
+    - name: Validate results
+      assert:
+        that:
+          - results.changed == True
+          - results.jira_project_role_membership.groups.0 == 'group_1'
+          - results.jira_project_role_membership.users.0 == 'auser'
+
+    - name: Test no changes
+      jira_project_role_membership:
+        project_key: PRJ1
+        role_name: Administrators
+        users:
+          - auser
+        groups:
+          - group_1
+      register: results
+
+    - name: Validate results
+      assert:
+        that:
+          - results.changed == False
+          - results.jira_project_role_membership.groups.0 == 'group_1'
+          - results.jira_project_role_membership.users.0 == 'auser'
+
+    - name: Delete users and groups from project
+      jira_project_role_membership:
+        project_key: PRJ1
+        role_name: Administrators
+        users:
+          - auser
+        groups:
+          - group_1
+        state: absent
+      register: results
+
+    - name: Delete test project
+      jira_project:
+        name: project_1
+        project_type_key: business
+        key: PRJ1
+        lead: admin
+        state: absent
+      register: results
+
+    - name: Delete test user
+      jira_user:
+        username: auser
+        email_address: auser@example.com
+        password: password
+        display_name: A User
+        state: absent
+      register: user_results
+
+    - name: Delete test group
+      jira_group:
+        name: group_1
+        state: absent
+      register: group_results

@@ -13,7 +13,7 @@
 
     - name: Create a Group
       jira_group:
-        group_name: group_1
+        name: group_1
 
     - name: Add user to group
       jira_user_group_membership:
@@ -42,3 +42,16 @@
       assert:
         that:
           - results.jira_user_group_membership_action == 'deleted'
+
+    - name: Delete test user
+      jira_user:
+        username: jdoe
+        email_address: jdoe@example.com
+        password: password
+        display_name: John Doe
+        state: absent
+
+    - name: Delete test group
+      jira_group:
+        name: group_1
+        state: absent

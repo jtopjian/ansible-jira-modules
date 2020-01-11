@@ -1,9 +1,17 @@
+  * This module is maintained by The Ansible Community
 OPTIONS (= is mandatory):
 
-- description
-        The description of the project category
-        Can be updated.
+- assignee
+        The Jira user assigned to the issue.
         [Default: (null)]
+
+- description
+        The description/contents of the issue.
+        [Default: (null)]
+
+= issue_type
+        The issue type of the issue.
+
 
 = jira_password
         The password to authenticate with
@@ -29,9 +37,22 @@ OPTIONS (= is mandatory):
           - JIRA_USERNAME
         
 
-= name
-        The name of the project category.
+- key
+        The Jira key to use for referencing an existing issue.
         Cannot be updated.
+        [Default: (null)]
+
+= project_key
+        The Jira key of the project.
+        Cannot be updated
+
+
+- reporter
+        The Jira user who reported the issue.
+        [Default: (null)]
+
+= summary
+        The summary/name of the issue
 
 
 - timeout
@@ -54,20 +75,22 @@ AUTHOR: Joe Topjian <joe@topjian.net>
 
 EXAMPLES:
 
-- name: Ensure project category exists
-  jira_project_category:
-    name: Internal Projects
-    description: A category for internal projects
+- name: Ensure issue exists
+  jira_issue:
+    summary: Test Issue
+    issue_type: Task
+    project_key: PRJ1
+    description: This is an issue
 
 
 RETURN VALUES:
 
-jira_project:
+jira_issue:
   type: dict
   description:
-    - A Jira project.
+    - A Jira issue.
     - See
-      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/projectCategory-getProjectCategoryById
+      https://docs.atlassian.com/software/jira/docs/api/REST/8.6.0/#api/2/issue-getIssue
       for the schema.
-  returned: When a Jira project category was detected.
+  returned: When a Jira issue was detected.
 

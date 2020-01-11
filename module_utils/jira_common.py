@@ -139,16 +139,42 @@ class JiraModuleBase(object):
         if info['status'] == 404:
             return False
 
+        if response is not None:
+            _body = response.read()
+            self.debug(msg="Body result: %s" % (_body))
+            if _body:
+                body = json.loads(to_text(_body, errors='surrogate_or_strict'))
+            else:
+                body = {}
+
         if info['status'] not in (200, 201, 204):
-            self.fail(msg=info['msg'])
+            error_msgs = []
 
-        body = response.read()
-        self.debug(msg="Body result: %s" % (body))
+            if 'msg' in info:
+                error_msgs.append(info['msg'])
 
-        if body:
-            return json.loads(to_text(body, errors='surrogate_or_strict'))
-        else:
-            return {}
+            if 'body' in info:
+                _body = json.loads(
+                    to_text(info['body'],
+                            errors='surrogate_or_strict'))
+
+            if 'errorMessages' in _body:
+                for e in _body['errorMessages']:
+                    error_msgs.append(e)
+
+            if 'errors' in _body:
+                for e in _body['errors']:
+                    error_msgs.append("%s: %s" % (e, _body['errors'][e]))
+
+            if len(error_msgs) > 0:
+                error_msg = "HTTP Error %s: [%s]" % (
+                    info['status'], ', '.join(error_msgs))
+            else:
+                error_msg = "HTTP Error %s" % (info['status'])
+
+            self.fail(msg=error_msg)
+
+        return body
 
     def post(self, data, query=None):
         return self.request(
